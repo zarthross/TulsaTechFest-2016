@@ -1,0 +1,1040 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/sky.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<style type="text/css">
+				.left {
+					text-align: left;
+					float: left;
+					width: 50% !important;
+				}
+				.right {
+					text-align: right;
+					float: right;
+					width: 50%  !important;
+				}
+				img {
+					border: 0px !important;
+					box-shadow: 0 0 0px !important;
+				}
+			</style>
+			<div class="slides">
+				<section> <!-- Title -->
+					<h2>Scala 101</h2>
+					<h3>Object Oriented and <b>Fun</b>ctional</h3>
+					<img src="images/logos/scala.png" height="200px" style="border: 0px; box-shadow: 0 0 0px" />
+				</section>
+				<section data-markdown> <!-- Summary -->
+					<script type="text/template">
+					## So?
+					1. What is scala? <!-- .element: class="fragment" data-fragment-index="1" -->
+					1. Who made/maintains/uses scala? <!-- .element: class="fragment" data-fragment-index="2" -->
+					1. Where was it developed? <!-- .element: class="fragment" data-fragment-index="3" -->
+					1. Why <!-- .element: class="fragment" data-fragment-index="4" -->
+						- was it made? <!-- .element: class="fragment" data-fragment-index="5" -->
+						- you should use it? <!-- .element: class="fragment" data-fragment-index="7" -->
+					1. How do I get started? <!-- .element: class="fragment" data-fragment-index="8" -->
+				  </script>
+			  </section>
+				<section> <!-- Introduction to me -->
+					<section data-markdown><script type="text/template">
+						## But First!
+					</script></section>
+					<section>
+						<h2>Who am I?</h2>
+						<ul>
+							<li class="fragment" data-fragment-index="1">Darren Gibson</li>
+							<li class="fragment" data-fragment-index="2">OSU Grad</li>
+							<li class="fragment" data-fragment-index="3">Software Engineer @ <br/> <img src="images/InterWorks-Logo-Black.png" height="50px" /> </li>
+							<li class="fragment" data-fragment-index="4">
+								Professional .Net developer.
+							</li>
+							<li class="fragment" data-fragment-index="5">
+								Member of Tulsa Java and Tulsa Web Devs
+							</li>
+							<li class="fragment" data-fragment-index="6">
+								<span style="font-weight: bold">Scala Enthusiast<span>
+							</li>
+						</ul>
+					</section>
+					<section data-markdown><script type="text/template">
+						## Where can I be found?
+						- github.com/zarthross
+						- twitter.com/zarthross
+						- techlahoma.slack.com/team/zarthross
+					</script></section>
+				</section>
+				<section> <!-- WHAT -->
+					<section><h1>What is Scala?</h1></section>
+					<section data-background-image="images/scala-features.png" data-background-size="contain">
+					</section>
+					<section> <!-- Paradigm OO -->
+						<h2>Paradigm</h2>
+						<h3>Object Oriented</h3>
+						<pre><code data-noescape class="scala">
+							class Point(xc: Int, yc: Int) {
+								var x: Int = xc
+								var y: Int = yc
+								def move(dx: Int, dy: Int) {
+									x = x + dx
+									y = y + dy
+								}
+								override def toString(): String = "(" + x + ", " + y + ")";
+							}
+						</code></pre>
+					</section>
+					<section> <!-- Paradigm Imperative -->
+						<h2>Paradigm</h2>
+						<h3>Imperative</h3>
+						<pre><code data-noescape class="scala">
+							def fib( n : Int ) : Int = {
+							  var a = 0
+							  var b = 1
+							  var i = 0
+
+							  while( i < n ) {
+							    val c = a + b
+							    a = b
+							    b = c
+							    i = i + 1
+							  }
+							  return a
+							}
+						</code></pre>
+					</section>
+					<section><!-- Paradigm Functional pt1 -->
+						<h2>Paradigm</h2>
+						<h3><b>Fun</b>ctional</h3>
+						<div style="position: relative; margin:0 auto;">
+							<pre class="fragment fade-out" data-fragment-index=1><code data-noescape class="scala">
+								def fib1( n : Int) : Int = n match {
+								   case 0 | 1 => n
+								   case _ => fib1( n-1 ) + fib1( n-2 )
+								}
+							</code></pre>
+							<div class="fragment fade-in" data-fragment-index=0>
+								<div class="fragment fade-out" data-fragment-index=1>
+										Hmm, Stack overflow?<br/>
+										We can do better!
+								</div>
+							</div>
+							<pre style="position:absolute; top:0px; left:50px;" class="fragment fade-in" data-fragment-index=1><code data-noescape class="scala">
+								def fib2( n : Int) : Int = {
+									@scala.annotation.tailrec // Optional
+								  def fib_tail( n: Int, a:Int, b:Int): Int = n match {
+								    case 0 => a
+								    case _ => fib_tail( n-1, b, a+b )
+								  }
+								  return fib_tail( n, 0, 1)
+								}
+							</code></pre>
+							<div class="fragment" data-fragment-index=2>
+								<code>fib_tail</code> becomes a <code>while</code> loop in the bytecode!
+							</div>
+						</div>
+					</section>
+					<section> <!-- Typing discipline -->
+						<h2>Typing discipline</h2>
+						<pre><code data-noescape class="scala">
+							val foo: Int = 10 // Statically Checked!
+							val bar: String = 10 /* This FAILS */ // Strongly Typed
+							val bleh = 10 // Types can be infered!
+
+							// Structural Typing!
+							// (probably shouldn't do this...)
+							// (Uses JVM reflection so ends up being slow)
+							def quacker(duck: { def quack: String }) =  println(duck.quack)
+
+							quacker(new { def quack = "QUACK!" })
+
+							class Goose { def quack = "HONK!" }
+							quacker(new Goose())
+						</code></pre>
+					</section>
+					<section> <!-- Platforms -->
+						<section data-markdown><script type="text/template">
+							## Platforms
+							- Java Virtual Machine (Scala) <!-- .element: class="fragment" data-fragment-index="1" -->
+							 - Windows/Linux/Mac <!-- .element: class="fragment" data-fragment-index="1" -->
+							   - x86(-64), Arm and more <!-- .element: class="fragment" data-fragment-index="1" -->
+							 - Android <!-- .element: class="fragment" data-fragment-index="2" -->
+							 - iOS via BugVM <!-- .element: class="fragment" data-fragment-index="2" -->
+							 - .Net via IKVM  <!-- .element: class="fragment" data-fragment-index="2" -->
+							- Javascript (Scala.js) <!-- .element: class="fragment" data-fragment-index="3" -->
+							 - NodeJS  <!-- .element: class="fragment" data-fragment-index="3" -->
+							 - Any JS compatible browser  <!-- .element: class="fragment" data-fragment-index="3" -->
+							- Bare Metal (Scala-native)  <!-- .element: class="fragment" data-fragment-index="4" -->
+							 - Any LLVM Target  <!-- .element: class="fragment" data-fragment-index="4" -->
+						</script></section>
+					</section>
+				</section>
+				<section data-markdown> <!-- When -->
+					<script type="text/template">
+						# When
+						## First appeared
+						### January 20, 2004
+						## Last Stable Release
+						### `2.11.8` March 8, 2016
+					</script>
+				</section>
+				<section> <!-- WHO/WHERE -->
+					<section><h1>WHO?</h1></section>
+					<section id="who">
+						<h3>Who Uses Scala?</h3>
+						<img src="images/logos/coursera.svg" height="40em" class="fragment" data-fragment-index="1"/>
+						<img src="images/logos/twitter.svg"  height="40em" class="fragment" data-fragment-index="2"/>
+						<img src="images/logos/LinkedIn.svg"  height="40em" class="fragment" data-fragment-index="2"/>
+						<img src="images/logos/Huffington_Post.png" height="40em" class="fragment" data-fragment-index="3"/>
+						<img src="images/logos/Walmart_Canada.svg"  height="60em" class="fragment" data-fragment-index="3"/>
+						<img src="images/logos/Foursquare.svg" height="80em" class="fragment" data-fragment-index="4"/>
+
+						<img src="images/logos/airbnb.png"  height="40em" class="fragment" data-fragment-index="4"/>
+						<img src="images/logos/hootsuite.png"  height="70em" class="fragment" data-fragment-index="4"/>
+						<img src="images/logos/iheart.png"  height="70em" class="fragment" data-fragment-index="5"/>
+						<img src="images/logos/intel.png"  height="70em" class="fragment" data-fragment-index="5"/>
+						<img src="images/logos/samsung.jpg"  height="70em" class="fragment" data-fragment-index="5"/>
+
+						<span  class="fragment" data-fragment-index="5">
+							<svg width="320" height="60px" viewBox="0 0 320 60" class="inline-guardian-logo-320__svg inline-logo__svg">
+								<rect x="0" y="0" width="320" height="60" fill="#005689"/>
+								<path fill="#fff" d="M284 45h16v-3l-3-1.5v-20c1.2-.9 2.8-1.1 4.3-1.1 2.8 0 3.7.9 3.7 4.1v17l-3 1.5v3h16v-3l-3-1.5v-19c0-5.7-2.1-8.3-7.1-8.3-4.1 0-8.1 1.5-10.8 4V13h-1l-12.4 2.2v2.7l3.3 1.6v21l-3 1.5v3zM245.3.4c-3 0-5.4 2.4-5.4 5.5 0 3 2.4 5.4 5.4 5.4 2.9 0 5.4-2.4 5.4-5.4-.1-3.1-2.5-5.5-5.4-5.5zM237 15.1v2.8l3 1.6v20.9l-3 1.5V45h16v-3.1l-3-1.5V13.1h-1l-12 2zM223 39c-.7.6-1.7 1.1-3.2 1.1-4 0-5.9-3.3-5.9-10.9 0-8.7 2.4-11.6 5.6-11.6 1.8 0 2.8.6 3.5 1.4v20zm0-24.4c-1.2-.9-3.3-1.4-5-1.4-7.4 0-14.5 4.4-14.5 16.8 0 11.9 7.1 15.7 11.8 15.7 3.8 0 6.4-1.7 7.6-3.4h.3v3.3h.9l11.9-1.4v-2.3l-3-1.8V.6h-1l-12.6 2v2.8l3.6 1.5v7.7zM181 18l3 1.5v20.9l-3 1.5V45h17v-3.1l-4-1.5V24.1c1.8-1.4 4.1-1.9 6.8-1.9.9 0 1.6.2 2.2.3v-9c-.3-.1-.7-.2-1.2-.2-3.3 0-6 2.2-7.8 6.2V13h-1l-12 2v3zm-19.3-.8c3.9 0 5.3 2 5.3 5.9v3.5l-6.1 1.1c-5.9 1.1-10.4 2.9-10.4 9.3 0 5.1 3.5 8.7 8.3 8.7 3.8 0 7.4-1.7 8.7-4.4h.3c.5 3.3 3.3 4.4 6.4 4.4 2.4 0 4.8-.6 5.7-1.6v-2l-2.9-1.5v-18c0-7-5.2-9.4-13.3-9.4-5.3 0-8.6 1.3-11.4 2.6v7.8h4.7l2-6c1.1-.4 2.3-.4 2.7-.4zm2.3 22.9c-1.9 0-4-1.1-4-4.6 0-2.4 2.4-4.7 4.8-5l2.2-.5v8.5s-1.9 1.6-3 1.6zm100.7-22.9c3.9 0 5.3 2 5.3 5.9v3.5l-6.1 1.1c-5.9 1.1-10.4 2.9-10.4 9.3 0 5.1 3.5 8.7 8.3 8.7 3.8 0 7.4-1.7 8.7-4.4h.3c.5 3.3 3.3 4.4 6.4 4.4 2.4 0 4.8-.6 5.7-1.6v-2l-2.9-1.5v-18c0-7-5.2-9.4-13.3-9.4-5.3 0-8.6 1.3-11.4 2.6v7.8h4.7l2-6c1.1-.4 2.3-.4 2.7-.4zm2.3 22.9c-1.9 0-4-1.1-4-4.6 0-2.4 2.4-4.7 4.8-5l2.2-.5v8.5s-1.9 1.6-3 1.6zm-138.7 5.6c.4 0 .9 0 1.3-.1 3.5-.3 6.7-2 8.4-4.2v4.1l12-1.5v-2l-3-2V13h-1l-12 2.3V18l4 1.7V38c-1.1.8-2.4 1.3-4.2 1.3-2.5 0-4.8-.8-4.8-4.3V13h-1l-12 2.5v2.6l4 1.6V36c0 5.4 2.2 9.7 8.3 9.7zM96 38c-1.2 0-2.5-.8-2.5-1.9 0-.8.6-1.7 1.4-2.3 1.6.5 3 .6 5 .6 7.8 0 13.2-3.7 13.2-10.4 0-3-1.3-4.6-3.2-6.4L115 19v-6l-8.2 1.6c-1.9-.7-4.5-1.6-7-1.6-7.8 0-13.2 4.1-13.2 10.8 0 4.1 2 7.1 5 8.8l.2.2c-1.7 1.2-5.3 4-5.3 7.2 0 2.4 1.5 4.8 4.8 5.5-3.4.8-7.3 2.5-7.3 6.5 0 4.1 5.9 8 15.5 8 11.8 0 16.5-5.7 16.5-13 0-6.1-2.8-9-9.5-9H96zm7.5-14c0 5.7-1.3 6.5-3.5 6.5s-4-.8-4-6.5c0-5.8 1.8-7.5 4-7.5s3.5 2 3.5 7.5zM92 50.9c.1-1.5 1.1-3.4 3.7-3.6h8.6c2.5 0 3.7 2 3.7 3.6 0 3.2-2 4.4-8.3 4.4-5.5 0-7.8-2.2-7.7-4.4z"></path>
+								<path fill="#AADCE6" d="M83 30c0-13-5.1-16.9-13-16.9-9 0-15 6.2-15 16.4 0 10.5 5.5 16.2 15.8 16.2 5.6 0 9.7-2.7 11.2-4.7v-3c-2.1.7-3.9 1.2-7.7 1.2-5.6 0-9.3-3.2-9.3-9.2h18zM69.9 16.6c2.5 0 3.8 1.8 3.8 9.6l-8.4.7c.1-7.9 1.8-10.3 4.6-10.3zM37 45v-3l-3-1.5V21c1.2-.9 3.2-1.7 4.8-1.7 2.8 0 4.3 1.6 4.2 4.2v17L40 42v3h16v-3l-3-1.5v-19c0-5.7-3.3-8.3-7.7-8.3-4.1 0-8.6 1.3-11.3 3.8V0h-1L21 2v3l4 1.5v34L22 42v3h15zM4 36.4c0 5.7 2.8 9.3 8.9 9.3 3.1 0 6.2-.8 8.1-2.3v-3.8c-.8.3-1.9.5-2.9.5-2.9 0-4.1-1.6-4.1-4.6V19h7v-5h-7V6.5L4 8v6l-4 1v4h4v17.4z"></path>
+							</svg>
+						</span>
+
+						<br /><br />
+						<span class="fragment" data-fragment-index="6">
+							And MANY More <br />
+							<a href="http://www.lightbend.com/resources/case-studies-and-stories">http://www.lightbend.com/resources/case-studies-and-stories</a>
+						</span>
+					</section>
+					<section>
+						<h2>Who Made Scala</h2>
+						<img src="images/Martin.jpg" height="350px"/>
+						<h4>Martin Odersky</h4>
+						<p>Created an early javac compiler and java generics and much more.</p>
+					</section>
+					<section data-markdown><script type="text/template">
+						## Where was Scala Developed?
+
+						Programming Methods Laboratory of
+						<img  style="background: #CCC;border: 0px;box-shadow: 0 0 0px;" src="images/epfl.svg" class="fragment" data-fragment="2" height="300px"/>
+					</script></section>
+					<section>
+						<h2>Who maintains Scala?</h2>
+						<img style="background: #CCC;border: 0px;box-shadow: 0 0 0px;" src="images/lightbend.svg" class="fragment" data-fragment-index="1"/>
+						<span class="fragment" data-fragment="2">AND</span>
+						<br/>
+						<img  style="background: #CCC;border: 0px;box-shadow: 0 0 0px;" src="images/epfl.svg" class="fragment" data-fragment="2" height="300px"/>
+					</section>
+				</section>
+				<section> <!-- WHY -->
+					<section><h1>Why?</h1></section>
+					<section><h2>Question?</h2></section>
+					<section> <!-- Grammar Size -->
+						<h3>Can you match the size of the Grammar to the language?</h3>
+						<div class="left fragment" data-fragment-index="0">
+							<ol>
+								<li>C# <span class="fragment" data-fragment-index="2">- 1210</span></li>
+								<li>C++ <span class="fragment" data-fragment-index="3">- 1748</span></li>
+								<li>Haskell 98 <span class="fragment" data-fragment-index="4">- 416</span></li>
+								<li>Java 7 <span class="fragment" data-fragment-index="5">- 528</span></li>
+								<li>Scala 2.10 <span class="fragment" data-fragment-index="6">- 302</span></li>
+							<ol>
+						</div>
+						<div class="right">
+							<ol style="list-style-type: upper-alpha" class="fragment" data-fragment-index="1">
+								<li class="fragment fade-out" data-fragment-index="6">302</li>
+								<li class="fragment fade-out" data-fragment-index="4">416</li>
+								<li class="fragment fade-out" data-fragment-index="5">528</li>
+								<li class="fragment fade-out" data-fragment-index="2">1210</li>
+								<li class="fragment fade-out" data-fragment-index="3">1748</li>
+							<ol>
+						</div>
+						<span class="fragment" data-fragment-index="9">
+							source: https://groups.google.com/forum/#!topic/scala-debate/fE8w9pi-hbQ
+								post by Martin Odersky
+						</span>
+					</section>
+					<section data-markdown> <!-- Why They Made it -->
+						<script type="text/template">
+							## So, Why was it made?
+							- To make a __SCA__LABLE __LA__NGUAGE
+							- To Combine Object Oriented and Functional Paradigms <!-- .element: class="fragment" data-fragment-index="0" -->
+							- Make Concurrent/Parallal Programming Easier <!-- .element: class="fragment" data-fragment-index="1" -->
+							- Java SUUUUCKs <!-- .element: class="fragment" data-fragment-index="4" -->
+							- JVM is OK <!-- .element: class="fragment" data-fragment-index="5" -->
+							- Lots of good libraries... <!-- .element: class="fragment" data-fragment-index="6" -->
+							- but, really.... Java SUUUUCKs <!-- .element: class="fragment" data-fragment-index="7" -->
+						</script>
+					</section>
+					<section data-markdown> <!-- Why you should use it -->
+						<script type="text/template">
+						## Why should you use it?
+
+						All the previous reasons and more!
+
+						- The Syntax
+						- The Libraries
+						- The not JAVA
+					</script></section>
+				</section>
+				<section data-markdown> <!-- HOW -->
+					<script type="text/template">
+					## How do I get Started?
+					- Tools/IDEs
+					- Syntax
+						- Variables
+						- Expressions
+						- Functions/Lambdas
+						- Class/Object/Package
+						- Interface/Traits
+						- Types (Generics)
+						- Pattern Matching
+					- If we have time
+						- Option Monad
+						- Implicits
+					</script>
+				</section>
+				<section data-markdown> <!-- Tools -->
+					<script type="text/template">
+					## Tools/IDEs
+					- IDE's
+					  - Eclipse
+						- Idea Intellij  <- Recommended
+						- Netbeans
+					- Build scripts
+						- Maven
+						- Apache Buildr
+						- Gradle
+						- SBT (Simple/Scala Build Tool)  <- Recommended
+					- Scala-SDK
+						- scala/scalac
+					- scala-js-fiddle.com
+					</script>
+				</section>
+				<section> <!-- Hello World! -->
+					<section data-markdown>
+						<script type="text/template">
+							## Hello World!
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							## Hello World!
+							### Java
+							```java
+							class HelloWorld {
+							     public static void main(String[] args) {
+							          System.out.println("Hello, world!");
+							     }
+							}
+							```
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							## Hello World!
+							### Scala
+							```Scala
+							object HelloWorld {
+								def main(args: Array[String]): Unit = {
+								  println("Hello, world!")
+								}
+							}
+							```
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							# Just Kidding.
+							### We can do better
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							## Hello World!
+							### Scala
+							```Scala
+							object HelloWorld extends App {
+								println("Hello, world!")
+							}
+							```
+						</script>
+					</section>
+				</section>
+				<section> <!-- Variables -->
+					<section data-markdown><script type="text/template">
+						# Variables
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Variables
+						- Semicolons are optional
+						- Most variables types can be infered
+						- `val` vs `var`
+					</script></section>
+					<section data-markdown><script type="text/template">
+						### Quick aside
+						Java and Scala share primitive types
+						- `Int`
+						- `Float`
+						- `Double`
+						- `String`
+						- (etc)
+					</script></section>
+					<section>
+						<h2>Variables (examples)</h2>
+						<span class="left">
+						<h4>Java</h4>
+	    			<pre><code data-noescape class="java">
+							int foo = 5;
+							String bar = "asdf";
+
+							final double bob = 20.1;
+							final String jo = "JO";
+	    			</code></pre>
+						</span>
+						<span class="right">
+						<h4 style="text-align: left;">Scala</h4>
+						<pre><code data-noescape class="scala">
+							var foo: Int = 5;
+							var bar: String = "asdf"
+
+							val bob = 20.1   // Type Infered
+							val jo: String = "JO"
+						</code></pre>
+						</span>
+					</section>
+					<section>
+						<h2>Variables (cont)</h2>
+						<pre><code data-noescape class="scala">
+							val t: (Int,Int,String) = (1,3,"TEST")
+							// Really its Tuple3[Int,Int,String]
+
+							//Tuple destructuring bind??? (similar to pythons)
+							val (x,y,z) = t
+
+							x == t._1
+							y == t._2 //etc
+
+							// Useful for writing maps since its just a Tuple2
+							val bar: (Int,String) = 1 -> "s"
+						</code></pre>
+					</section>
+				</section>
+				<section> <!-- Expressions -->
+					<section data-markdown><script type="text/template">
+						# Expressions
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Expressions
+						### If
+						```scala
+						var bar = 10
+
+						val foo = if(bar < 10) "less" else "more"
+						//foo: String = more
+
+						println(foo)
+						```
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Expressions
+						### For
+						```scala
+
+						var bar = 10
+
+						val foo = for (i <- Range(0,10)) yield i * bar
+						// foo: IndexedSeq[Int] = Vector(0, 10, 20, 30, 40, 50, 60, 70, 80, 90)
+
+
+						```
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Expressions
+						### match
+						A better `switch`
+						```scala
+
+						val x:Any = 9
+						val y = x match {
+							case 1 => "one"
+							case 2 => "two"
+							case x: Int if x % 2 == 0 => "even"
+							case "foobar" => "wat?"
+							case _ => "other"
+						}
+						//y: String = other
+
+						```
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Expressions
+						### Block
+						```scala
+						val fooBar: Int = {
+							val f = 100 * 500
+							f * 10000
+						}
+						// fooBar: Int = 500000000
+
+						```
+					</script></section>
+					<section data-markdown><script type="text/template">
+						## Expressions
+						### Try
+						```scala
+
+						val userInput = "19"
+						val n: Int = try {
+						  5 / userInput.toInt
+						} catch {
+						    case a: ArithmeticException => 0
+						    case n: NumberFormatException => throw n
+						    case _: Throwable =>
+									println("PROBLEM! Doing nothing");
+									-1
+						} finally {
+							println("Finally!")
+						}
+
+						```
+					</script></section>
+				</section>
+				<section> <!-- Functions -->
+					<section data-markdown> <!-- Title -->
+						<script type="text/template">
+							# Functions
+						</script>
+					</section>
+					<section data-markdown> <!-- Infered return -->
+						<script type="text/template">
+						## Functions
+						### Infered return types
+						```scala
+							def doubler(i: Int): Int = {
+								return i * 2
+							}
+
+							def triplier(i: Int) = {
+								i * 3 // 'return' is optional and type is infered
+							}
+						```
+					</script></section>
+					<section data-markdown> <!-- Curly -->
+						<script type="text/template">
+						## Functions
+						### Curly Braces are optional (for one liners)
+						```scala
+
+						def triplier(i: Int) = i * 3
+
+						val foo: Int = triplier(10)
+						```
+					</script></section>
+					<section data-markdown> <!-- Nested -->
+						<script type="text/template">
+						## Functions
+						### Nested
+						```scala
+							def foo(f1: Double, f2: Double): String = {
+								def bar(a: Double) = s"BAR! $a / $f1 = ${ a / f1}"
+
+								bar(f2)
+							}
+
+							val r = foo(5, 11)
+							// r: String = BAR! 11.0 / 5.0 = 2.2
+
+						```
+					</script></section>
+					<section data-markdown> <!-- Currying -->
+						<script type="text/template">
+						## Functions
+						### Currying
+						```scala
+						def curry(i: Int)(j: Int) = i + j
+
+						var c = curry(1) _
+
+						c(2)
+						```
+					</script></section>
+					<section data-markdown> <!-- Generics Basic -->
+						<script type="text/template">
+						## Functions
+						### Generics
+						```scala
+						def logIt[T](t: T): T = {
+							println(s"${System.currentTimeMillis()}: $t")
+							t
+						}
+
+						logIt("asdf")
+						// 1470315417220: asdf
+						// res2: String = asdf
+
+						logIt(102.123)
+						// 1470315422909: 102.123
+						// res3: Double = 102.123
+
+						```
+					</script></section>
+					<section data-markdown> <!-- Call by name -->
+						<script type="text/template">
+						## Functions
+						### Call by Name
+						```scala
+						def timer[T](block: => T): (T, Long) = {
+							val startTime = System.nanoTime
+							val result = block
+							val endTime = System.nanoTime
+							(result, endTime - startTime)
+						}
+
+						timer(Math.pow(100, 100))
+						//res10: (Double, Long) = (1.0E200,12513)
+
+						timer {
+							println("Sleeping")
+							Thread.sleep(10000)
+							println("Sleeped")
+						}
+						//Sleeping
+						//Sleeped
+						//res11: (Unit, Long) = ((),10000223092)
+						```
+					</script></section>
+					<section data-markdown> <!-- Lambda -->
+						<script type="text/template">
+						## Functions
+						### Lambda Syntax
+						```scala
+							def t1(a: Int) = a * 10
+
+							val t2: Int => Int = (a) => a * 10
+
+							val t3 = (a: Int) => a * 10
+						```
+					</script></section>
+					<section data-markdown> <!-- Lambda Pt 2 -->
+						<script type="text/template">
+						## Functions
+						### Lambda Pt2
+						```scala
+						var l = List(1,2,3,4)
+
+						l.reduce((x,y) => x+y)
+
+						l.map(_ + 2)
+						//> res1: List[Int] = List(3, 4, 5, 6)
+
+						l reduce { (x,y) => x + y }
+						//> res2: Int = 10
+						```
+					</script></section>
+					<section data-markdown> <!-- Var args -->
+						<script type="text/template">
+						## Functions
+						### Var-args
+						```scala
+						def sum(vals: Int*): Int = vals.reduce(_ + _)
+
+						sum(1,2,3,4)
+						//res4: Int = 10
+
+						```
+					</script></section>
+				</section>
+				<section> <!-- Object/Class/Trait -->
+					<section data-markdown> <!-- Title -->
+						<script type="text/template">
+						# Objects
+					</script></section>
+  				<section
+						data-background-image="images/scala_type_hierarchy.png" data-background-size="contain"> <!-- Type Hierarchy -->
+					</section>
+					<section data-markdown> <!-- Class -->
+						<script type="text/template">
+						## Class
+						```scala
+						// Primary constructor is function body
+						class Car(val model: String, private var spd: Double) {
+						  def this(model: String) = this(model,0) // Secondary constructor
+
+						  def isMoving = speed != 0  // Accessor
+
+							println("Is this car moving?", isMoving)  // Yup, constructor
+
+							private var desc = s"Car: $model"
+							override def toString(): String = s"$desc $speed mph"
+
+							def speed = spd          // Accessor
+							def speed_=(v: Double) {  // Mutator
+							  spd = v;
+							}
+						}
+						```
+					</script></section>
+					<section data-markdown> <!-- Inheritance -->
+						<script type="text/template">
+						## Class inheritance
+						```scala
+						class Vehicle(val model: String)
+
+						class Truck(val model: String, towCapcity: Int)
+							extends Vehicle(model)
+						// Child class must call parent primary constructor
+						// No multiple inheritance with classes
+						```
+					</script></section>
+					<section data-markdown> <!-- Static -->
+						<script type="text/template">
+						## 'Static'
+						Just Kidding, no such thing <!-- .element: class="fragment" data-fragment-index="2" -->
+
+						Only singletons! <!-- .element: class="fragment" data-fragment-index="3" -->
+					</script></section>
+					<section data-markdown> <!-- Singletons -->
+						<script type="text/template">
+							## Singletons
+							```scala
+							class Point(val x: Int, val y: Int)
+
+							object Point { // 'Companion` Object
+								private var foo: Int = 10 // meh, its a static var
+								def add(a: Point, b: Point): Point = //Static(ish) method!
+									new Point(a.x + b.x, a.y + b.y)
+
+								def apply(x: Int, y: Int) = new Point(x,y) //Factory
+								def unapply(t: Point): Option[(Int, Int)] = Some((t.x, t.y))
+							}
+
+							val i = Point(10,30) // Point.apply
+							Point.add(i, i)
+							i match {
+								case Point(x,y) => println(s"($x, $y)") // Point.unapply
+							}
+							```
+					</script></section>
+					<section data-markdown> <!-- Case Class -->
+						<script type="text/template">
+						## Case class
+						```scala
+						case class Point(x: Int, y: Int) {// x, y immutable by default
+							def add(a: Point) = Point(x + a.x, y + a.y)
+						}
+						val i1 = Point(10,30)
+						val i2 = i1.copy(y = i1.y + 10)
+
+						i1 add i2
+
+						i1 match {
+							case Point(x,y) => println(s"($x, $y)")
+						}
+
+						i1 == Point(10,30) // true
+						i1 == Point(1, 3)  // False
+						```
+					</script></section>
+					<section data-markdown> <!-- Package -->
+						<script type="text/template">
+							## Package
+							```scala
+							// com/garden/apples/package.scala
+							package com.garden
+
+							package object apples extends RedApples with GreenApples {
+								val redApples = List(red1, red2)
+								val greenApples = List(green1, green2)
+							}
+
+							// com/garden/apples/RedApples.scala
+							package com.garden.apples
+							trait RedApples { val red1, red2 = "red" }
+
+							// com/garden/apples/GreenApples.scala
+							package com.garden.apples
+							trait GreenApples { val green1, green2 = "green" }
+							```
+					</script></section>
+					<section data-markdown> <!-- Types Pt 1-->
+						<script type="text/template">
+						## Types
+						- Metaprogramming
+						- Same features as java + a few more.
+						- Still experiences erasure.
+						  - Workaround using implicit ‘Manifest’
+					</script></section>
+					<section data-markdown> <!-- Types Pt 2 -->
+						<script type="text/template">
+						## Types
+						- Variance
+						  - `T'` is subclass of `T`
+						  - covariant `[+T]`: `C[T']` is a subclass of `C[T]`
+						  - contravariant `[-T]`: `C[T]` is a subclass of `C[T']`
+						  - invariant `[T]`: `C[T]` and `C[T']` are not related
+					</script></section>
+					<section data-markdown> <!-- Types Pt 3 -->
+						<script type="text/template">
+						## Types
+						- Type Bounds
+							- based on subtype relationships
+							- for instance: `[T <: AnyVal]`
+						- View bounds
+							- types that are 'viewable' as another type.
+						- Much More (structural types, etc)
+					</script></section>
+				</section>
+				<section> <!-- Traits -->
+					<section data-markdown> <!-- Title -->
+						<script type="text/template">
+						# Traits
+					</script></section>
+					<section data-markdown> <!-- Traits -->
+						<script type="text/template">
+							## Traits
+							#### (aka Mixins)
+							```scala
+							trait Automobile {          // Like Interfaces, BUT
+								def Type: String = "Auto" // Can have default implementations
+								val hasWheels = true      // Allows var/vals
+							}
+							trait Sporty { this: Automobile => // Sporty must be an Automobile
+								def MaxSpeed: Long
+							}
+							class Car extends Automobile with Sporty {
+								override def Type = "Car"
+								def MaxSpeed: Long = 100
+							}
+
+							class Foo extends Sporty {} // Does not compile
+							// <console>:9: error: illegal inheritance;
+							// self-type Foo does not conform to Sporty's selftype
+							//  Sporty with Automobile
+							```
+					</script></section>
+					<section data-markdown> <!-- Linearization -->
+						<script type="text/template">
+						## Trait
+						### Linearization
+						```scala
+						trait A { def common = "A" }
+
+						trait B extends A { override def common = "B" }
+						trait C extends A { override def common = "C" }
+
+						class D1 extends B with C
+						class D2 extends C with B
+
+						(new D1).common == "C"
+						(new D2).common == "B"
+						```
+						source: https://ktoso.github.io/scala-types-of-types/
+					</script></section>
+					<section data-markdown> <!-- Linearization pts2-->
+						<script type="text/template">
+						## Trait
+						### Linearization explained
+						```scala
+						class D1 extends B with C
+
+						// start with D1:
+						B with C with <D1>
+
+						// expand all the types until you reach Any for all of them:
+						(Any with AnyRef with A with B) with (Any with AnyRef with A with C) with <D1>
+
+						// remove duplicates by removing "already seen" types,
+						// when moving left-to-right:
+						(Any with AnyRef with A with B) with (                            C) with <D1>
+
+						// write the resulting type nicely:
+						Any with AnyRef with A with B with C with <D1>
+						```
+						<!-- .element: class="stretch" -->
+						source: https://ktoso.github.io/scala-types-of-types/
+					</script></section>
+				</section>
+				<section> <!-- ADT -->
+					<section data-markdown> <!-- Title -->
+						<script type="text/template">
+						# ADT
+						## Abstract Data Types
+					</script></section>
+					<section data-markdown> <!-- Basic Pattern Matching -->
+						<script type="text/template">
+						## Basic Pattern matching
+						```scala
+						def matchTest(x: Int): String = x match {
+						  case 1 => "one"
+						  case 2 => "two"
+						  case _ => "many"
+						}
+						println(matchTest(3))
+					 ```
+  				</script></section>
+					<section data-markdown> <!-- Simple ADT -->
+						<script type="text/template">
+						## ADTs
+						### Putting it all together
+						```scala
+						abstract class Term
+						case class Val(v: Int) extends Term
+						case class Plus(left: Term, right: Term) extends Term
+						case class Times(left: Term, right: Term) extends Term
+						case class Pow(x: Term, n: Term) extends Term
+						```
+					</script></section>
+					<section data-markdown> <!-- Simple ADT2 -->
+						<script type="text/template">
+						## ADTs
+						### Print
+						```scala
+						def printTerm(term: Term): String = {
+						  term match {
+						    case Val(n) => n.toString
+						    case Plus(l,r) => s"(${printTerm(l)} + ${printTerm(r)})"
+						    case Times(l,r) => s"(${printTerm(l)} * ${printTerm(r)})"
+						    case Pow(x,n) => s"(${printTerm(x)} ^ ${printTerm(n)})"
+						  }
+						}
+
+						val p = Plus(Val(1), Val(5))
+						val t = Times(Val(3), p)
+						val powAdt = Pow(t, Val(3))
+
+						val result = printTerm(powAdt)
+						println(result)
+						// ((3 * (1 + 5)) ^ 3)
+						```
+					</script></section>
+					<section data-markdown> <!-- Simple ADT3 -->
+						<script type="text/template">
+						## ADTs
+						### Execute
+						```scala
+						def executeTerm(term: Term): Int = {
+						  term match {
+						    case Val(n) => n
+						    case Plus(l,r) => executeTerm(l) + executeTerm(r)
+						    case Times(l,r) => executeTerm(l) * executeTerm(r)
+						    case Pow(_ ,Val(n)) if n == 0 => 1 // Base case for Pow recursion
+						    case Pow(x@Val(_), n@Val(nv)) =>  // If x and n are simple
+						      executeTerm(Times(x, Pow(x, Plus(n, Val(-1)))))
+						    case Pow(x, n) => // Simplify x and n and try again
+						      executeTerm(Pow(Val(executeTerm(x)),Val(executeTerm(n))))
+						  }
+						}
+
+						val r = executeTerm(powAdt)
+						println(r)
+						// 5832
+						```
+					</script></section>
+				</section>
+				<section data-markdown><script type="text/template">
+					## Resources
+
+					- coursera.org/specializations/scala
+					- scala-js-fiddle.com
+					- docs.scala-lang.org
+					- scala-exercises.org
+					- twitter.github.io/scala_school
+					- twitter.github.io/effectivescala
+					- Programming in Scala Book:
+						- artima.com/pins1ed
+					- scalatutorials.com/tour
+					- scala-tour.com
+					- ktoso.github.io/scala-types-of-types
+
+				</script></section>
+<!--
+				<section data-markdown>
+					<script type="text/template">
+				</script></section>
+				<section>
+					<pre><code data-noescape class="scala">
+					</code></pre>
+				</section>
+-->
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/jquery-3.1.0.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			$(function() {
+				$("code").each(function(index) {
+					var t = $(this).text();
+					var strs = t.split("\n");
+					var firstN = 0;
+					if(strs[0].trim().length <= 1) {
+						firstN = 1;
+					}
+					var first = strs[firstN].trimLeft();
+					var diff = strs[firstN].length - first.length;
+					var result = "";
+					//console.log(firstN,diff);
+					//console.log(t);
+					for(var s in strs)
+					{
+						//console.log(strs[s].substring(diff));
+						result = result + strs[s].substring(diff) + "\n";
+					}
+					$(this).text(result);
+				});
+			});
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+				slideNumber: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() {
+						hljs.configure({
+							tabReplace: '    ', // 4 spaces
+						});
+						hljs.initHighlightingOnLoad();
+					} },
+					{ src: 'socket.io/socket.io.js', async: true },
+					{ src: 'plugin/notes-server/client.js', async: true },
+
+	        // Zoom in and out with Alt+click
+	        { src: 'plugin/zoom-js/zoom.js', async: true },
+
+	        // Speaker notes
+	        { src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>

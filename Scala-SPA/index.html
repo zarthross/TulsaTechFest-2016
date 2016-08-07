@@ -1,0 +1,431 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/sky.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<style type="text/css">
+				.left {
+					text-align: left;
+					float: left;
+					width: 50% !important;
+				}
+				.right {
+					text-align: right;
+					float: right;
+					width: 50%	!important;
+				}
+				img {
+					border: 0px !important;
+					box-shadow: 0 0 0px !important;
+				}
+			</style>
+			<div class="slides">
+				<section> <!-- Title -->
+					<h2>Single Page Application Development with Scala.js</h2>
+					<img src="images/logos/scala.png" height="200px" style="border: 0px; box-shadow: 0 0 0px" />
+				</section>
+				<section data-markdown> <!-- Topics -->
+					<script type="text/template">
+						## What are we going to talk about?
+						- What is Scala
+							- For the people that didn’t go to Scala 101.
+						- What is Scala.js
+						- Why fullstack Type-safe development is desirable
+						- Tool Chain
+						- Javascript Library Facades
+						- Helpful Libraries
+						- Example app ‘Live-Coding’
+				</script></section>
+				<section> <!-- WHAT -->
+					<section><h1>What is Scala?</h1></section>
+					<section data-background-image="images/scala-features.png" data-background-size="contain">
+					</section>
+					<section> <!-- Paradigm OO -->
+						<h2>Paradigm</h2>
+						<h3>Object Oriented</h3>
+						<pre><code data-noescape class="scala">
+							class Point(xc: Int, yc: Int) {
+								var x: Int = xc
+								var y: Int = yc
+								def move(dx: Int, dy: Int) {
+									x = x + dx
+									y = y + dy
+								}
+								override def toString(): String = "(" + x + ", " + y + ")";
+							}
+						</code></pre>
+					</section>
+					<section> <!-- Paradigm Imperative -->
+						<h2>Paradigm</h2>
+						<h3>Imperative</h3>
+						<pre><code data-noescape class="scala">
+							def fib( n : Int ) : Int = {
+								var a = 0
+								var b = 1
+								var i = 0
+
+								while( i < n ) {
+									val c = a + b
+									a = b
+									b = c
+									i = i + 1
+								}
+								return a
+							}
+						</code></pre>
+					</section>
+					<section><!-- Paradigm Functional pt1 -->
+						<h2>Paradigm</h2>
+						<h3><b>Fun</b>ctional</h3>
+						<div style="position: relative; margin:0 auto;">
+							<pre class="fragment fade-out" data-fragment-index=1><code data-noescape class="scala">
+								def fib1( n : Int) : Int = n match {
+									 case 0 | 1 => n
+									 case _ => fib1( n-1 ) + fib1( n-2 )
+								}
+							</code></pre>
+							<div class="fragment fade-in" data-fragment-index=0>
+								<div class="fragment fade-out" data-fragment-index=1>
+										Hmm, Stack overflow?<br/>
+										We can do better!
+								</div>
+							</div>
+							<pre style="position:absolute; top:0px; left:50px;" class="fragment fade-in" data-fragment-index=1><code data-noescape class="scala">
+								def fib2( n : Int) : Int = {
+									@scala.annotation.tailrec // Optional
+									def fib_tail( n: Int, a:Int, b:Int): Int = n match {
+										case 0 => a
+										case _ => fib_tail( n-1, b, a+b )
+									}
+									return fib_tail( n, 0, 1)
+								}
+							</code></pre>
+							<div class="fragment" data-fragment-index=2>
+								<code>fib_tail</code> becomes a <code>while</code> loop in the bytecode!
+							</div>
+						</div>
+					</section>
+					<section> <!-- Typing discipline -->
+						<h2>Typing discipline</h2>
+						<pre><code data-noescape class="scala">
+							val foo: Int = 10 // Statically Checked!
+							val bar: String = 10 /* This FAILS */ // Strongly Typed
+							val bleh = 10 // Types can be infered!
+
+							// Structural Typing!
+							// (probably shouldn't do this...)
+							// (Uses JVM reflection so ends up being slow)
+							def quacker(duck: { def quack: String }) =	println(duck.quack)
+
+							quacker(new { def quack = "QUACK!" })
+
+							class Goose { def quack = "HONK!" }
+							quacker(new Goose())
+						</code></pre>
+					</section>
+					<section> <!-- Platforms -->
+						<section data-markdown><script type="text/template">
+							## Platforms
+							- Java Virtual Machine (Scala) <!-- .element: class="fragment" data-fragment-index="1" -->
+							 - Windows/Linux/Mac <!-- .element: class="fragment" data-fragment-index="1" -->
+								 - x86(-64), Arm and more <!-- .element: class="fragment" data-fragment-index="1" -->
+							 - Android <!-- .element: class="fragment" data-fragment-index="2" -->
+							 - iOS via BugVM <!-- .element: class="fragment" data-fragment-index="2" -->
+							 - .Net via IKVM	<!-- .element: class="fragment" data-fragment-index="2" -->
+							- Javascript (Scala.js) <!-- .element: class="fragment" data-fragment-index="3" -->
+							 - NodeJS	<!-- .element: class="fragment" data-fragment-index="3" -->
+							 - Any JS compatible browser	<!-- .element: class="fragment" data-fragment-index="3" -->
+							- Bare Metal (Scala-native)	<!-- .element: class="fragment" data-fragment-index="4" -->
+							 - Any LLVM Target	<!-- .element: class="fragment" data-fragment-index="4" -->
+						</script></section>
+					</section>
+				</section>
+				<section> <!-- What is Scala.js -->
+					<section data-markdown>
+						<script type="text/template">
+							# What is Scala.js
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## Scala.js
+							- Scala in the Browser! <!-- .element: class="fragment" data-fragment-index="1" -->
+							- Scala on Node <!-- .element: class="fragment" data-fragment-index="2" -->
+							- Javascript Interopt <!-- .element: class="fragment" data-fragment-index="3" -->
+					</script></section>
+
+				</section>
+				<section> <!-- Full Stack Dev -->
+					<section data-markdown>
+						<script type="text/template">
+							#Why Full Stack Scala?
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## Typical Web Stack
+							- Client
+								- Javascript
+								- HTML
+								- CSS
+							- Server
+								- PHP
+							- Database
+								- SQL
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## 'Compiled' Web Stack
+
+							- Client
+								- Javascript
+								- HTML
+								- CSS
+							- Server
+								- C#
+							- Database
+								- ORM -> SQL
+									- EntityFramework
+
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## Safer Web Stack
+
+							- Client
+								- Typescript
+								- HTML
+								- CSS
+							- Server
+								- C#
+							- Database
+								- ORM -> SQL
+									- EntityFramework
+
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## Saferer Web Stack
+
+							- Client
+								- Typescript
+								- React
+								- CSS
+							- Server
+								- C#
+							- Database
+								- ORM -> SQL
+									- EntityFramework
+
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## Safest Web Stack
+
+							- Client
+								- Scala.js
+								- Scala-tags/Scala React
+								- Scala-CSS
+							- Server
+								- ScalaJVM
+							- Database
+								- ORM -> SQL
+									- Slick/Quil/Scala Relational
+
+					</script></section>
+					<section data-markdown>
+						<script type="text/template">
+							## So... why?
+
+							- Push unsafe operations to the periphery of your application.
+							- Share Code between client and server
+								- Models (POJOs)
+								- Interfaces
+								- Validation Logic
+								- Templates
+							- Keep the tool chain simple
+					</script></section>
+				</section>
+				<section data-markdown> <!-- Tools -->
+					<script type="text/template">
+					## Tools/IDEs
+					- IDE's
+						- Eclipse
+						- Idea Intellij	<- Recommended
+						- Netbeans
+					- Build scripts
+						- Maven
+						- Apache Buildr
+						- Gradle
+						- SBT (Simple/Scala Build Tool)	<- Recommended
+					- Scala-SDK
+						- scala/scalac
+					- scala-js-fiddle.com
+					</script>
+				</section>
+				<section data-markdown> <!-- Scala.js Limitations-->
+					<script type="text/template">
+						## Scala.js Limitations
+
+						- No Java
+						- No Java Standard Library
+						- No Java Libraries
+						- Must use scala libraries compiled for Scala.js
+						- Must use pure scala code
+				</script></section>
+				<section data-markdown> <!-- Scala.js Limitations-->
+					<script type="text/template">
+						## Performance
+
+						- fastOptJS
+						- fullOptJS
+				</script></section>
+				<section data-markdown> <!-- Javascript Library Facades -->
+					<script type="text/template">
+						## Javascript Library Facades
+				</script></section>
+				<section>  <!-- Helpful LIbraries-->
+					<section data-markdown> <!-- Helpful LIbraries-->
+						<script type="text/template">
+						## Helpful Libraries
+
+						- HTML
+							- Scala-Tags
+							- Scala-Reactjs
+							- SRI
+							- WIDOK
+						- CSS
+							- Scala-css
+					</script></section>
+					<section data-markdown> <!-- Helpful LIbraries-->
+						<script type="text/template">
+						## Helpful Libraries
+						- Database
+							- Slick
+							- Scalarelational
+							- Quil
+					</script></section>
+					<section data-markdown> <!-- Helpful LIbraries-->
+						<script type="text/template">
+							## Helpful Libraries
+
+							- Server
+								- Play
+								- Scalatra (Like rubys Sinatra)
+								- LIFT
+								- Akka-HTTP (formerly Spray.IO)
+							- RPC
+								- Autowire
+								- Udash RPC
+
+						</script></section>
+				</section>
+				<section data-markdown> <!-- Live Coding -->
+					<script type="text/template">
+						## Live Coding
+				</script></section>
+
+				<section data-markdown> <!-- Resources -->
+					<script type="text/template">
+					## Resources
+
+					- coursera.org/specializations/scala
+					- scala-js-fiddle.com
+					- docs.scala-lang.org
+					- scala-exercises.org
+					- twitter.github.io/scala_school
+					- twitter.github.io/effectivescala
+					- Programming in Scala Book:
+						- artima.com/pins1ed
+					- scalatutorials.com/tour
+					- scala-tour.com
+					- ktoso.github.io/scala-types-of-types
+					- Scala Times
+						- (scalatimes.com)
+
+				</script></section>
+<!--
+				<section data-markdown>
+					<script type="text/template">
+				</script></section>
+				<section>
+					<pre><code data-noescape class="scala">
+					</code></pre>
+				</section>
+-->
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/jquery-3.1.0.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			$(function() {
+				$("code").each(function(index) {
+					var t = $(this).text();
+					var strs = t.split("\n");
+					var firstN = 0;
+					if(strs[0].trim().length <= 1) {
+						firstN = 1;
+					}
+					var first = strs[firstN].trimLeft();
+					var diff = strs[firstN].length - first.length;
+					var result = "";
+					//console.log(firstN,diff);
+					//console.log(t);
+					for(var s in strs)
+					{
+						//console.log(strs[s].substring(diff));
+						result = result + strs[s].substring(diff) + "\n";
+					}
+					$(this).text(result);
+				});
+			});
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+				slideNumber: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() {
+						hljs.configure({
+							tabReplace: '		', // 4 spaces
+						});
+						hljs.initHighlightingOnLoad();
+					} },
+					{ src: 'socket.io/socket.io.js', async: true },
+					{ src: 'plugin/notes-server/client.js', async: true },
+
+					// Zoom in and out with Alt+click
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+
+					// Speaker notes
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
